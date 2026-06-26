@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Melhoria Painel SeuChef — Vagas Gráficos</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #101828;
+      --muted: #667085;
+      --border: #e4e7ec;
+      --purple: #5738f5;
+      --purple-light: #f1efff;
+      --blue: #3b7cff;
+      --blue-light: #eff6ff;
+      --green: #027a48;
+      --green-bg: #ecfdf3;
+      --orange: #c2410c;
+      --orange-bg: #fff7ed;
+      --shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 32px auto 56px;
+    }
+
+    .topbar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 26px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--purple);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .brand strong {
+      font-size: 18px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .topbar p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+      max-width: 780px;
+    }
+
+    .status-box {
+      min-width: 190px;
+      background: var(--purple-light);
+      border: 1px solid #ded7ff;
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .status-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .status-box strong {
+      color: var(--purple);
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .card + .card {
+      margin-top: 22px;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--purple);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--purple);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .chart-title {
+      margin-bottom: 22px;
+    }
+
+    .chart-title h2 {
+      font-size: 20px;
+    }
+
+    .chart-title p {
+      margin: 8px 0 0;
+      font-size: 14px;
+    }
+
+    .chart-wrapper {
+      position: relative;
+      width: 100%;
+      height: 420px;
+    }
+
+    .note {
+      background: #fffbeb;
+      border: 1px solid #fedf89;
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: #92400e;
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 16px 0 0;
+    }
+
+    .info-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .info-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      background: #fff;
+    }
+
+    .info-item strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .info-item span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      display: inline-flex;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #f2f4f7;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .tag.medium {
+      background: var(--orange-bg);
+      color: var(--orange);
+    }
+
+    .tag.pending {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+
+    .tag.area {
+      background: var(--blue-light);
+      color: #175cd3;
+    }
+
+    .formula {
+      background: #101828;
+      color: #ffffff;
+      border-radius: 14px;
+      padding: 16px;
+      font-family: "Courier New", monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-x: auto;
+      margin-top: 14px;
+      white-space: pre-line;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .checklist li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: #344054;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .checklist li::before {
+      content: "✓";
+      flex: 0 0 22px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--green-bg);
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .side-card {
+      position: sticky;
+      top: 20px;
+    }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .summary-table th,
+    .summary-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    .summary-table th {
+      background: #f9fafb;
+      color: #475467;
+      font-weight: 800;
+      width: 145px;
+    }
+
+    .summary-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .code-reference {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 13px;
+      color: #344054;
+      line-height: 1.6;
+    }
+
+    .metric-preview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .metric strong {
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    @media (max-width: 980px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .side-card {
+        position: static;
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .status-box {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .metric-preview {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        margin-top: 16px;
+      }
+
+      .topbar,
+      .card {
+        padding: 18px;
+        border-radius: 16px;
+      }
+
+      .topbar h1 {
+        font-size: 23px;
+      }
+
+      .chart-wrapper {
+        height: 360px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div>
+        <div class="brand">
+          <div class="brand-mark">💼</div>
+          <strong>SeuChef — Painel Administrativo</strong>
+        </div>
+
+        <h1>Melhoria: adicionar gráficos analíticos na página de vagas</h1>
+
+        <p>
+          Documento visual para apresentar as alterações necessárias na página
+          <strong>Operacional &gt; Vaga</strong>. A proposta é adicionar dois gráficos:
+          um para distribuição de vagas por tipo e outro para comparar vagas publicadas em 2025 e 2026.
+        </p>
+      </div>
+
+      <aside class="status-box">
+        <span>Status</span>
+        <strong>Pendente</strong>
+      </aside>
+    </header>
+
+    <section class="grid">
+      <div>
+        <section class="charts-grid">
+          <section class="card">
+            <div class="chart-title">
+              <span class="eyebrow">Prévia visual 1</span>
+              <h2>Vagas por tipo</h2>
+              <p>Comparativo mensal por origem/tipo de vaga publicada.</p>
+            </div>
+
+            <div class="chart-wrapper">
+              <canvas id="jobTypeChart"></canvas>
+            </div>
+
+            <div class="metric-preview">
+              <div class="metric">
+                <span>Avulsas jan-mai</span>
+                <strong>293</strong>
+              </div>
+
+              <div class="metric">
+                <span>Pacotes jan-mai</span>
+                <strong>517</strong>
+              </div>
+
+              <div class="metric">
+                <span>Total jan-mai</span>
+                <strong>832</strong>
+              </div>
+            </div>
+
+            <div class="note">
+              Os valores usados nesta prévia são dados de exemplo da referência enviada.
+              Na versão real, os dados devem vir da base do painel e respeitar os filtros aplicados na página.
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="chart-title">
+              <span class="eyebrow">Prévia visual 2</span>
+              <h2>Vagas publicadas — comparativo anual</h2>
+              <p>Comparativo mensal entre vagas publicadas em 2025 e 2026.</p>
+            </div>
+
+            <div class="chart-wrapper">
+              <canvas id="publishedJobsChart"></canvas>
+            </div>
+
+            <div class="metric-preview">
+              <div class="metric">
+                <span>2026 jan-mai</span>
+                <strong>788</strong>
+              </div>
+
+              <div class="metric">
+                <span>2025 jan-mai</span>
+                <strong>783</strong>
+              </div>
+
+              <div class="metric">
+                <span>Diferença</span>
+                <strong>+5</strong>
+              </div>
+            </div>
+
+            <div class="note">
+              Este gráfico ajuda a comparar o desempenho de publicação de vagas do ano atual com o ano anterior.
+            </div>
+          </section>
+        </section>
+
+        <section class="card">
+          <span class="eyebrow">Anotação da melhoria</span>
+          <h2>Adicionar gráficos de análise na página Operacional &gt; Vaga</h2>
+
+          <div class="tag-row">
+            <span class="tag medium">Prioridade: Média</span>
+            <span class="tag pending">Status: Pendente</span>
+            <span class="tag area">Área: Operacional</span>
+            <span class="tag">Página: /admin/jobs</span>
+          </div>
+
+          <div class="info-list">
+            <div class="info-item">
+              <strong>Problema atual</strong>
+              <span>
+                A página de vagas mostra apenas um gráfico geral de vagas dos últimos 12 meses,
+                mas ainda não oferece uma visão detalhada por tipo de vaga e nem comparação direta entre anos.
+              </span>
+            </div>
+
+            <div class="info-item">
+              <strong>Como deve funcionar</strong>
+              <span>
+                Adicionar dois novos gráficos na página: um gráfico de barras por tipo de vaga
+                e um gráfico de linha comparando as vagas publicadas em 2025 e 2026.
+              </span>
+            </div>
+
+            <div class="info-item">
+              <strong>Ajuste necessário</strong>
+              <span>
+                Criar uma seção analítica na página Operacional &gt; Vaga, usando os dados de vagas
+                agrupados por mês, ano e tipo de venda/publicação.
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <span class="eyebrow">Regras de cálculo</span>
+          <h2>Como os gráficos devem ser calculados</h2>
+
+          <p>
+            Os gráficos devem usar a data de criação/publicação da vaga e agrupar os resultados por mês.
+          </p>
+
+          <div class="formula">Gráfico 1:
+Total de vagas por mês, separadas por tipo de vaga.
+
+Gráfico 2:
+Total de vagas publicadas por mês, comparando 2025 x 2026.</div>
+
+          <p>
+            Os tipos esperados para o primeiro gráfico são:
+            vaga avulsa, vaga associada, vaga com cupom, vaga gratuita e vaga de pacote.
+          </p>
+        </section>
+
+        <section class="card">
+          <span class="eyebrow">Requisito técnico</span>
+          <h2>Dados dinâmicos dos gráficos de vagas</h2>
+
+          <p>
+            Os dois gráficos da página Operacional &gt; Vaga precisam ser alimentados com dados reais da base.
+            Os valores não devem ficar fixos no HTML ou no JavaScript.
+          </p>
+
+          <div class="info-list">
+            <div class="info-item">
+              <strong>GET/API — Buscar dados iniciais</strong>
+              <span>
+                Ao carregar a página, o front-end deve fazer uma requisição para buscar os dados reais da base
+                e montar os gráficos iniciais. A API deve retornar os dados já agrupados por mês, ano e tipo de vaga.
+              </span>
+            </div>
+
+            <div class="info-item">
+              <strong>Envio de filtros — Atualizar dados dos gráficos</strong>
+              <span>
+                Quando o usuário aplicar filtros na página, como período, ano, tipo de vaga, status, empresa,
+                cidade ou estado, o front-end deve enviar esses filtros para a API para recalcular os dados.
+              </span>
+            </div>
+
+            <div class="info-item">
+              <strong>Retorno esperado da API</strong>
+              <span>
+                A API deve retornar os valores já tratados para os gráficos. O front-end deve apenas receber
+                os dados, montar os labels e atualizar a visualização.
+              </span>
+            </div>
+
+            <div class="info-item">
+              <strong>Não deixar valores fixos</strong>
+              <span>
+                Os arrays usados neste HTML são apenas exemplos visuais. Na implementação final, todos os valores
+                precisam vir da base de dados do painel.
+              </span>
+            </div>
+          </div>
+
+          <div class="formula">Fluxo esperado:
+
+1. Usuário acessa Operacional > Vaga.
+2. Front-end faz GET/API para buscar os dados iniciais dos gráficos.
+3. API consulta a base e retorna os dados agrupados por mês.
+4. Front-end monta os gráficos com os dados retornados.
+5. Usuário aplica filtros na tela.
+6. Front-end envia os filtros para a API.
+7. API retorna os dados recalculados.
+8. Front-end atualiza os gráficos.</div>
+        </section>
+
+        <section class="card">
+          <span class="eyebrow">Critério de aceite</span>
+          <h2>Quando considerar essa melhoria concluída</h2>
+
+          <ul class="checklist">
+            <li>A página Operacional &gt; Vaga passa a exibir o gráfico de vagas por tipo.</li>
+            <li>A página passa a exibir o gráfico comparativo de vagas publicadas por ano.</li>
+            <li>Os dados são agrupados corretamente por mês.</li>
+            <li>O gráfico de tipos separa avulsas, associadas, cupom, gratuitas e pacotes.</li>
+            <li>O gráfico comparativo diferencia claramente 2025 e 2026.</li>
+            <li>Os dados são puxados da base por API/GET ou endpoint equivalente.</li>
+            <li>Os filtros aplicados na tela atualizam os gráficos.</li>
+            <li>Os valores não ficam fixos no front-end.</li>
+            <li>Os números batem com a base real de vagas.</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <span class="eyebrow">Observação técnica</span>
+          <h2>Exemplo de estrutura esperada dos dados</h2>
+
+          <p>
+            Na versão final do painel, os dados fixos deste HTML devem ser substituídos pelos dados vindos
+            do banco ou da API do painel.
+          </p>
+
+          <div class="code-reference">
+            <code>
+              GET /api/admin/jobs/charts<br><br>
+
+              Retorno esperado:<br><br>
+
+              {<br>
+              &nbsp;&nbsp;"labels": ["Jan", "Fev", "Mar", "Abr", "Maio", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],<br>
+              &nbsp;&nbsp;"jobTypes": {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;"vagaAvulsa": [69, 61, 53, 62, 48, 0, 0, 0, 0, 0, 0, 0],<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;"vagaAssociados": [0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0],<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;"vagasComCupom": [0, 2, 20, 6, 0, 0, 0, 0, 0, 0, 0, 0],<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;"vagasGratuitas": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;"vagasPacotes": [114, 111, 101, 113, 78, 0, 0, 0, 0, 0, 0, 0]<br>
+              &nbsp;&nbsp;},<br>
+              &nbsp;&nbsp;"publishedJobs": {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;"2025": [185, 164, 133, 166, 135, 144, 99, 167, 135, 154, 156, 61],<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;"2026": [183, 147, 158, 166, 134, null, null, null, null, null, null, null]<br>
+              &nbsp;&nbsp;}<br>
+              }
+            </code>
+          </div>
+
+          <p>
+            O nome dos endpoints pode ser ajustado pelo desenvolvedor conforme a estrutura real do projeto.
+            O ponto obrigatório é que os gráficos sejam alimentados por dados reais da base.
+          </p>
+        </section>
+      </div>
+
+      <aside class="card side-card">
+        <span class="eyebrow">Resumo</span>
+        <h2>Operacional &gt; Vaga</h2>
+
+        <table class="summary-table">
+          <tbody>
+            <tr>
+              <th>Item</th>
+              <td>Adicionar 2 gráficos analíticos</td>
+            </tr>
+            <tr>
+              <th>Arquivo HTML visualização</th>
+              <td>vagas-grafico.html</td>
+            </tr>
+            <tr>
+              <th>Prioridade</th>
+              <td>Média</td>
+            </tr>
+            <tr>
+              <th>Status</th>
+              <td>Pendente</td>
+            </tr>
+            <tr>
+              <th>Página</th>
+              <td>/admin/jobs</td>
+            </tr>
+            <tr>
+              <th>Menu</th>
+              <td>Operacional &gt; Vaga</td>
+            </tr>
+            <tr>
+              <th>Gráficos</th>
+              <td>
+                1. Vagas por tipo<br>
+                2. Vagas publicadas 2025 x 2026
+              </td>
+            </tr>
+            <tr>
+              <th>Dados</th>
+              <td>
+                Devem vir da base via API/GET e atualizar conforme filtros aplicados na tela.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          Este arquivo HTML serve para visualização e aprovação da ideia. Depois, o desenvolvedor deve
+          adaptar os gráficos para a tecnologia real do painel.
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Maio', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+    const formatNumber = (value) => {
+      return new Intl.NumberFormat('pt-BR').format(value);
+    };
+
+    const valueLabelPlugin = {
+      id: 'valueLabelPlugin',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+
+        chart.data.datasets.forEach((dataset, datasetIndex) => {
+          const meta = chart.getDatasetMeta(datasetIndex);
+
+          ctx.save();
+          ctx.font = '12px Arial';
+          ctx.fillStyle = dataset.borderColor || dataset.backgroundColor;
+          ctx.textAlign = 'center';
+
+          meta.data.forEach((point, index) => {
+            const value = dataset.data[index];
+
+            if (value !== null && value !== undefined && value > 0) {
+              const isBar = dataset.type === 'bar' || chart.config.type === 'bar';
+              const yPosition = isBar ? point.y - 8 : point.y - 14;
+
+              ctx.fillText(formatNumber(value), point.x, yPosition);
+            }
+          });
+
+          ctx.restore();
+        });
+      }
+    };
+
+    const jobTypeCtx = document.getElementById('jobTypeChart');
+
+    const jobTypeData = {
+      vagaAvulsa: [69, 61, 53, 62, 48, 0, 0, 0, 0, 0, 0, 0],
+      vagaAssociados: [0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0],
+      vagasComCupom: [0, 2, 20, 6, 0, 0, 0, 0, 0, 0, 0, 0],
+      vagasGratuitas: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      vagasPacotes: [114, 111, 101, 113, 78, 0, 0, 0, 0, 0, 0, 0]
+    };
+
+    new Chart(jobTypeCtx, {
+      type: 'bar',
+
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Vaga avulsa',
+            data: jobTypeData.vagaAvulsa,
+            backgroundColor: '#ff3b6b',
+            borderColor: '#ff3b6b',
+            borderRadius: 3
+          },
+          {
+            label: 'Vaga associados',
+            data: jobTypeData.vagaAssociados,
+            backgroundColor: '#7a8f2a',
+            borderColor: '#7a8f2a',
+            borderRadius: 3
+          },
+          {
+            label: 'Vagas com cupom',
+            data: jobTypeData.vagasComCupom,
+            backgroundColor: '#9d2ca0',
+            borderColor: '#9d2ca0',
+            borderRadius: 3
+          },
+          {
+            label: 'Vaga gratuitas',
+            data: jobTypeData.vagasGratuitas,
+            backgroundColor: '#ffa726',
+            borderColor: '#ffa726',
+            borderRadius: 3
+          },
+          {
+            label: 'Vagas pacotes',
+            data: jobTypeData.vagasPacotes,
+            backgroundColor: '#fb8c00',
+            borderColor: '#fb8c00',
+            borderRadius: 3
+          }
+        ]
+      },
+
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+
+        plugins: {
+          legend: {
+            position: 'top',
+            align: 'center',
+            labels: {
+              usePointStyle: true,
+              boxWidth: 10,
+              boxHeight: 10,
+              color: '#344054',
+              font: {
+                size: 12
+              }
+            }
+          },
+
+          tooltip: {
+            backgroundColor: '#ffffff',
+            titleColor: '#101828',
+            bodyColor: '#344054',
+            borderColor: '#e4e7ec',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                return `${context.dataset.label}: ${formatNumber(context.raw)}`;
+              }
+            }
+          }
+        },
+
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              color: '#101828',
+              font: {
+                size: 12,
+                weight: '600'
+              }
+            }
+          },
+
+          y: {
+            beginAtZero: true,
+            suggestedMax: 150,
+            grid: {
+              display: false
+            },
+            ticks: {
+              stepSize: 50,
+              color: '#101828',
+              callback: function(value) {
+                return formatNumber(value);
+              }
+            }
+          }
+        }
+      },
+
+      plugins: [valueLabelPlugin]
+    });
+
+    const publishedJobsCtx = document.getElementById('publishedJobsChart');
+
+    const publishedJobsData = {
+      vagas2025: [185, 164, 133, 166, 135, 144, 99, 167, 135, 154, 156, 61],
+      vagas2026: [183, 147, 158, 166, 134, null, null, null, null, null, null, null]
+    };
+
+    new Chart(publishedJobsCtx, {
+      type: 'line',
+
+      data: {
+        labels,
+        datasets: [
+          {
+            label: '2025',
+            data: publishedJobsData.vagas2025,
+            borderColor: '#3b7cff',
+            backgroundColor: '#3b7cff',
+            borderWidth: 3,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            tension: 0.35,
+            spanGaps: false
+          },
+          {
+            label: '2026',
+            data: publishedJobsData.vagas2026,
+            borderColor: '#ec00ff',
+            backgroundColor: '#ec00ff',
+            borderWidth: 3,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            tension: 0.35,
+            spanGaps: false
+          }
+        ]
+      },
+
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+
+        plugins: {
+          legend: {
+            position: 'top',
+            align: 'center',
+            labels: {
+              usePointStyle: true,
+              boxWidth: 10,
+              boxHeight: 10,
+              color: '#344054',
+              font: {
+                size: 12
+              }
+            }
+          },
+
+          tooltip: {
+            backgroundColor: '#ffffff',
+            titleColor: '#101828',
+            bodyColor: '#344054',
+            borderColor: '#e4e7ec',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                return `${context.dataset.label}: ${formatNumber(context.raw)} vagas`;
+              }
+            }
+          }
+        },
+
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              color: '#101828',
+              font: {
+                size: 12,
+                weight: '600'
+              }
+            }
+          },
+
+          y: {
+            beginAtZero: true,
+            suggestedMax: 250,
+            grid: {
+              display: false
+            },
+            ticks: {
+              stepSize: 50,
+              color: '#101828',
+              callback: function(value) {
+                return formatNumber(value);
+              }
+            }
+          }
+        }
+      },
+
+      plugins: [valueLabelPlugin]
+    });
+  </script>
+</body>
+</html>
