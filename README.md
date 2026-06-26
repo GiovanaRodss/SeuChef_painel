@@ -1,4 +1,3 @@
-````md
 # Melhorias Necessárias — Painel SeuChef
 
 Este projeto reúne as melhorias, ajustes e novas funcionalidades que precisam ser implementadas no painel administrativo do SeuChef.
@@ -195,6 +194,3 @@ Em levantamento e organização das melhorias
 Este repositório não representa a versão final do painel em produção.
 
 Ele serve como material de apoio para apresentar, aprovar e orientar a implementação das melhorias no painel administrativo do SeuChef.
-
-```
-```
